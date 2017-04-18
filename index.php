@@ -1,11 +1,24 @@
 <?php
 
-include __DIR__ . '/app/routes.php';
-
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\RequestContext;
 use Symfony\Component\Routing\Matcher\UrlMatcher;
+use Symfony\Component\Routing\RequestContext;
+use Symfony\Component\EventDispatcher\EventDispatcher;
+use Symfony\Component\HttpKernel\EventListener\RouterListener;
+use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\HttpKernel\HttpKernel;
+use Symfony\Component\HttpKernel\Controller\ControllerResolver;
+use Symfony\Component\HttpKernel\Controller\ArgumentResolver;
+
+/**
+ * Automated class loader provided by Composer
+ */
+require __DIR__ . '/vendor/autoload.php';
+
+/**
+ * Route Collection
+ */
+include __DIR__ . '/app/config/routes.php';
 
 /**
  * Request Object
@@ -13,29 +26,31 @@ use Symfony\Component\Routing\Matcher\UrlMatcher;
 $request = Request::createFromGlobals();
 
 /**
- * Response Object
+ * Route Identification
  */
-$response = new Response();
+$matcher = new UrlMatcher($routes, new RequestContext());
 
 /**
- * Request context
+ * Event Dispatcher
  */
-$context = new RequestContext();
-$context->fromRequest($request);
+$dispatcher = new EventDispatcher();
+$dispatcher->addSubscriber(new RouterListener($matcher, new RequestStack()));
 
 /**
- * Handle request
+ * Controller & Argument Resolvers
  */
-$matcher = new UrlMatcher($routes, $context);
+$controllerResolver = new ControllerResolver();
+$argumentResolver   = new ArgumentResolver();
 
-try {
-    extract($matcher->match($request->getPathInfo()), EXTR_SKIP);
-    include sprintf(__DIR__ . '/app/scripts/%s.php', $_route);
-} catch (Routing\Exception\ResourceNotFoundException $e) {
-    $response = new Response('Not Found', 404);
-} catch (Exception $e) {
-    $response = new Response('An error occurred', 500);
-}
+/**
+ * Kernel Init
+ */
+$kernel = new HttpKernel($dispatcher, $controllerResolver, new RequestStack(), $argumentResolver);
+
+/**
+ * Handle Request
+ */
+$response = $kernel->handle($request);
 
 /**
  * Fire response
