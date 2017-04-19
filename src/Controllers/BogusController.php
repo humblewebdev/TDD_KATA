@@ -7,9 +7,9 @@ use Symfony\Component\HttpFoundation\Response;
 
 class BogusController
 {
-    public function __construct()
+    public function __construct(BogusModel $bogusModel)
     {
-        $this->bogusModel = new BogusModel;
+        $this->bogusModel = $bogusModel;
     }
 
     /**
@@ -20,7 +20,7 @@ class BogusController
      */
     public function bogusFunction(Request $request)
     {
-        $name    = $request->get('name', 'World');
+        $name = $request->get('name', 'World');
 
         $message = $this->bogusModel
             ->setName($name)

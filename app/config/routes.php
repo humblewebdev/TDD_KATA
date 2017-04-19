@@ -22,7 +22,7 @@ $routes->add(
         'hello',
         [
             '_controller' => [
-                new App\Controllers\BogusController,
+                new App\Controllers\BogusController(new App\Models\BogusModel),
                 'bogusFunction'
             ]
         ]
