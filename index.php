@@ -13,7 +13,7 @@ use Symfony\Component\HttpKernel\Controller\ArgumentResolver;
 /**
  * Automated class loader provided by Composer
  */
-require __DIR__ . '/vendor/autoload.php';
+require_once __DIR__ . '/vendor/autoload.php';
 
 /**
  * Route Collection

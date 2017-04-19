@@ -4,12 +4,29 @@ namespace App\Models;
 class BogusModel
 {
     /**
-     * Test Model Function
+     * @var string $name
+     */
+    private $name;
+
+    /**
+     * Build greeting message
      *
      * @return string
      */
-    public function bogusFunction()
+    public function getMessage()
     {
-        return 'Hello World!';
+        return 'Hello ' . $this->name . '!';
+    }
+
+    /**
+     * Set name value
+     *
+     * @param string $name
+     * @return $this
+     */
+    public function setName($name)
+    {
+        $this->name = $name;
+        return $this;
     }
 }

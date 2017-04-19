@@ -2,12 +2,8 @@
 namespace App\Controllers;
 
 use App\Models\BogusModel;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-
-/**
- * TODO: Figure out how to properly load classes
- */
-include __DIR__ . '/../Models/BogusModel.php';
 
 class BogusController
 {
@@ -19,10 +15,17 @@ class BogusController
     /**
      * Test Controller Function
      *
+     * @param Request $request
      * @return Response
      */
-    public function bogusFunction()
+    public function bogusFunction(Request $request)
     {
-        return new Response($this->bogusModel->bogusFunction());
+        $name    = $request->get('name', 'World');
+
+        $message = $this->bogusModel
+            ->setName($name)
+            ->getMessage();
+
+        return new Response($message);
     }
 }
